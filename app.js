@@ -36,20 +36,34 @@ app.use((request, response, next) => {
     next()
 })
 
+/********************************** Imports e arquivos e bibioteca ************************************/
+const controllerFilmes = require('./controller/controller_filme.js')
+/**********************************************************************/
+
 // PRIMEIRO ENDPOINT
 
-// app.get('/v1/filmesacme', cors(), async function(request, response, next){
-//         let controleFilmes = require('./controller/main');
-//         let dadosFilmes = controleFilmes.listarDados();
+app.get('/v1/acmefilmes', cors(), async function(request, response, next){
+        let controleFilmes = require('./controller/main');
+        let dadosFilmes = controleFilmes.listarDados();
     
-//         console.log(dadosFilmes)
-//         response.json(dadosFilmes);
-//         response.status(200);
-// })
+        console.log(dadosFilmes)
+        response.json(dadosFilmes);
+        response.status(200);
+})
 
-// app.listen(8080, function(){
-//     console.log('API funcionando e aguardando requisições!!!')
-// })
+//ENDPOINT V2
+
+app.get('/v2/acmefilmes/filmes', cors(), async function(request, response, next){
+    let dadosFilmes = await controllerFilmes.getListarFilmes()
+
+    if(dadosFilmes){
+        response.json(dadosFilmes)
+        response.status(200)
+    }else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status(404)
+    }
+})
 
 // SEGUNDO ENDPOINT
 
