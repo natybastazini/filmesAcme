@@ -2,17 +2,59 @@
  * Objetivo: Arquivo responsável pela interação entre o APP e a model, que teremos 
  * todas as tratativas e regra de negócio para o CRUD de filmes.
  * Data: 30/01/2024.
- * Autor: Natalia Bastazini.
+ * Autor: Natália Bastazini.
  * Versao: 1.0
  **********************************************************************/
+
+//Import de arquivos de configurações do projeto.
+const message = require('../modulo/config.js')
 
 //Import do arquivo DAO para manipular dados do BD.
 const filmesDAO = require('../model/DAO/filme.js')
 
 
 //Função para inserir um novo filme no banco de dados.
-const setInserirNovoFilme = async function (){
+const setInserirNovoFilme = async function (dadosFilme){
 
+    let resultDadosFilme = {}
+    
+    // Validação para verificar campos obrigatórios e consistencia de dados
+    if( dadosFilme.nome             == '' || dadosFilme.nome            == undefined || dadosFilme.nome.length              > 80    ||
+        dadosFilme.sinopse          == '' || dadosFilme.sinopse         == undefined || dadosFilme.sinopse.length           > 65000 ||
+        dadosFilme.duracao          == '' || dadosFilme.duracao         == undefined || dadosFilme.duracao.length           > 8     ||
+        dadosFilme.data_lancamento  == '' || dadosFilme.data_lancamento == undefined || dadosFilme.data_lancamento.length   > 10    ||
+        dadosFilme.foto_capa        == '' || dadosFilme.foto_capa       == undefined || dadosFilme.foto_capa.length         > 200   ||
+        dadosFilme.valor_unitario.length > 8 
+    ){
+        return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorreto
+    }else{
+        let dadosValidated = false
+
+        if(dadosFilme.data_relancamento != null){
+            if(dadosFilme.data_relancamento.length > 10)
+                return message.ERROR_REQUIRED_FIELDS // 400 Campos origatórios / Incorretos
+            else
+             dadosValidated = true
+        }else{
+            dadosValidated = true
+        }
+
+        //Encaminha os dados para o DAO inserir no BD
+        let novoFilme = await filmesDAO.insertFilme()
+
+       //Validação para verificar se os dados foram inseridos pelo DAO no BD
+        if(novoFilme){
+            //Cria o padrão JSON para retorno dos dados criados no BD
+            resultDadosFilme.status         = message.SUCESS_CREATED_ITEM.status;
+            resultDadosFilme.status_code    = message.SUCESS_CREATED_ITEM.status_code;
+            resultDadosFilme.message        = message.SUCESS_CREATED_ITEM.message
+            resultDadosFilme.filme          = dadosFilme
+
+            return resultDadosFilme // 201
+        }else{
+            return message.ERROR_INTERNAL_SERVER_DB // 500 Erro na camada do DAO
+        }
+    }
 }
 
 //Função para atualizar um filme existente.
@@ -51,7 +93,64 @@ const getListarFilmes = async function(){
 
 //Função para buscar um filme pelo ID.
 const getBuscarFilme = async function(id){
+    //Recebe o Id do filme.
+    let idFilme = id
+    //Variável para criar o JSON de retorno do filme.
+    let filmeJSON = {}
 
+    //Validação para ID vazio, indefinido ou não numérico.
+    if(idFilme == '' || idFilme == undefined || isNaN(idFilme)){
+        return message.ERROR_INVALID_ID
+    }else{
+
+        //Solicita para o DAO a busca do filme pelo ID.
+        let dadosFilme = await filmesDAO.selectByIdFilme(id)
+
+        //Validação para verificar se existem dados encontrados
+        if(dadosFilme){
+            //Validação para verificar se existem dados de retorno
+            if(dadosFilme.length > 0){
+
+            filmeJSON.filme = dadosFilme
+            filmeJSON.status_code = 200
+
+            return filmeJSON //200
+            }else{
+                return message.ERROR_NOT_FOUND //400
+            }
+        }else{
+            return message.ERROR_INTERNAL_SERVER_DB //500
+        }
+    }
+
+
+}
+
+//Função para buscar um filme pelo nome.
+const  getBuscarFilmeNome = async function(nome){
+    let nomeFilme = nome
+    let filmesJSON = {}
+
+    if(nomeFilme == '' || nomeFilme == undefined){
+        return message.ERROR_INVALID
+    }else{
+        let dadosFilme = await filmesDAO.selectByNomeFilme(nomeFilme)
+
+        if(dadosFilme){
+            if(dadosFilme.length > 0){
+                filmesJSON.filme = dadosFilme
+                filmesJSON.status_code = 200
+
+                return filmesJSON
+            }else{
+                return message.ERROR_NOT_FOUND
+            }
+        }else{
+            return message.ERROR_INTERNAL_SERVER_DB
+        }
+
+    }
+        
 }
 
 module.exports={
@@ -59,5 +158,6 @@ module.exports={
     setAtualizarFilme,
     setExcluirFilme,
     getListarFilmes,
-    getBuscarFilme
+    getBuscarFilme,
+    getBuscarFilmeNome
 }
