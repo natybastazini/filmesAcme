@@ -41,6 +41,17 @@ insert into tbl_filme (	nome,
                         '50.00'
                         );
                         
+                        
+update tbl_filme set 
+nome = 'Gente Grande',
+sinopse = 'A morte do treinador de basquete de infância de velhos amigos reúne a turma no mesmo lugar que celebraram um campeonato anos atrás. Os amigos, acompanhados de suas esposas e filhos, descobrem que idade não significa o mesmo que maturidade',
+duracao = '01:42:00',
+data_lancamento = '2010-09-24',
+data_relancamento = null,
+foto_capa = 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcS3KC5CYzKSIx0aKLEL-lYfeeF7lfTqcd4nVGWOwO2IZaBzfdaz',
+valor_unitario = 40
+where id = 15;          
+                        
 select * from tbl_filme;
 
 select id from tbl_filme order by id desc limit 1;

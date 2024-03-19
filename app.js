@@ -144,7 +144,18 @@ app.delete('/v2/acmefilmes/filmes/:id', cors(), async function(request, response
 
 })
 
-app.get('/v2/acmefilmes/')
+//ENDPOINT: Update filme do Banco de Dados
+app.put('/v2/acmefilmes/filmes/:id', cors(), async function(request, response, next){
+
+    let idFilme = request.params.id
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    
+    let dadosAtualizados = await controllerFilmes.setAtualizarFilme(dadosBody, contentType, idFilme)
+    
+    response.status(dadosAtualizados.status_code);
+    response.json(dadosAtualizados)
+})
 
 //Executa a API e faz ela ficar aguardando requisições
 app.listen(8080, function(){
