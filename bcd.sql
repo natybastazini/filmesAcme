@@ -41,6 +41,12 @@ insert into tbl_filme (	nome,
                         '50.00'
                         );
                         
+select * from tbl_filme;
+
+select id from tbl_filme order by id desc limit 1;
+
+select cast(last_insert_id() as decimal) as id from tbl_filme limit 1;
+                        
 select * from tbl_filme where nome like '%velozes%';
 
 drop table tbl_teste;
@@ -48,3 +54,6 @@ drop table tbl_teste;
 show tables;
 
 desc tbl_filme;
+
+delete from tbl_filme where id = 13;
+

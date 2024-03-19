@@ -11,50 +11,54 @@ const { PrismaClient } = require ('@prisma/client')
 //Instanciando o objeto prisma com as caraterísticas do prisma client
 const prisma = new PrismaClient()
 
-//Inserir um novo filme,
-
+//Inserir um novo filme
 const insertFilme = async function(dadosFilme){
     try {
         let sql
 
-        if(dadosFilme.data_relancamento == null || dadosFilme.data_relancamento == '' || dadosFilme.data_relancamento == undefined){
-            sql = `insert into tbl_filme (
-                nome,
-                sinopse,
-                data_lancamento,
-                data_relancamento,
-                duracao,
-                foto_capa,
-                valor_unitario
-            ) values (
-                '${dadosFilme.nome}',
-                '${dadosFilme.sinopse}',
-                '${dadosFilme.data_lancamento}',
-                null,
-                '${dadosFilme.duracao}',
-                '${dadosFilme.foto_capa}',
-                '${dadosFilme.valor_unitario}'
-            )`;   
+        if( dadosFilme.data_relancamento == null ||
+            dadosFilme.data_relancamento == '' ||
+            dadosFilme.data_relancamento == undefined
+        ){
+                sql = `insert into tbl_filme (
+                    nome,
+                    sinopse,
+                    data_lancamento,
+                    data_relancamento,
+                    duracao,
+                    foto_capa,
+                    valor_unitario
+                ) values (
+                    '${dadosFilme.nome}',
+                    '${dadosFilme.sinopse}',
+                    '${dadosFilme.data_lancamento}',
+                    null,
+                    '${dadosFilme.duracao}',
+                    '${dadosFilme.foto_capa}',
+                    '${dadosFilme.valor_unitario}'
+                )`;
         }else{
-            //Script SQL para inserir os dados no banco
-            sql = `insert into tbl_filme (
-                                            nome,
-                                            sinopse,
-                                            data_lancamento,
-                                            data_relancamento,
-                                            duracao,
-                                            foto_capa,
-                                            valor_unitario
-                                        ) values (
-                                            '${dadosFilme.nome}',
-                                            '${dadosFilme.sinopse}',
-                                            '${dadosFilme.data_lancamento}',
-                                            '${dadosFilme.data_relancameto}',
-                                            '${dadosFilme.duracao}',
-                                            '${dadosFilme.foto_capa}',
-                                            '${dadosFilme.valor_unitario}'
-                                        )`;
-        }
+                //Script SQL para inserir os dados no banco
+                sql = `insert into tbl_filme (
+                                                nome,
+                                                sinopse,
+                                                data_lancamento,
+                                                data_relancamento,
+                                                duracao,
+                                                foto_capa,
+                                                valor_unitario
+                                            ) values (
+                                                '${dadosFilme.nome}',
+                                                '${dadosFilme.sinopse}',
+                                                '${dadosFilme.data_lancamento}',
+                                                '${dadosFilme.data_relancamento}',
+                                                '${dadosFilme.duracao}',
+                                                '${dadosFilme.foto_capa}',
+                                                ${dadosFilme.valor_unitario}
+                                            )`;
+        } 
+
+        console.log(sql)
         
         //Executa o scriptSQL no BD (devemos usar o comando execute não query)
         //O comando execute deve ser utilizado para (insert, update e delete)
@@ -79,6 +83,16 @@ const updateFilme = async function(id){
 //Excluir um filme existente filtrando pelo ID.
 
 const deleteFilme = async function(id){
+    try {
+        //Realiza a busca do filme pelo ID
+        let sql = `delete from tbl_filme where id = ${id}`
+
+        //Executa no Banco de Dados o script SQL
+        let rsFilme = await prisma.$queryRawUnsafe(sql)
+        return rsFilme
+    } catch (error) {
+        return false
+    }
 
 }
 
@@ -87,7 +101,7 @@ const deleteFilme = async function(id){
 const selectAllFilmes = async function(){
 
     //Script SQL para listar todos os registros
-    let sql = 'select * from tbl_filme'
+    let sql = 'select * from tbl_filme order by id desc'
 
     //$queryRawUnsafe() ---- encaminha apenas variável.
     //$queryRaw('select * from tbl_filme') ---- encaminha o script.
@@ -136,11 +150,26 @@ const selectByNomeFilme = async function(nome){
         return false
 }
 
+const selectUltimoId = async function(){
+        
+    try {
+        sql = `select cast(last_insert_id() as decimal) as id from tbl_filme limit 1;`
+    
+        let rsFilme = await prisma.$queryRawUnsafe(sql)
+        return rsFilme
+             
+    } catch (error) {
+        return false
+    }
+
+}
+
 module.exports={
     insertFilme, 
     updateFilme,
     deleteFilme,
     selectAllFilmes,
     selectByIdFilme,
-    selectByNomeFilme
+    selectByNomeFilme,
+    selectUltimoId
 }

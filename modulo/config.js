@@ -17,9 +17,15 @@ const ERROR_INTERNAL_SERVER_DB      =   {status: false, status_code: 500, messag
 
 const ERROR_INVALID                 =   {status: false, status_code: 400, message: 'O nome encaminhado na requisição não é válido!!!'}
 
+const ERROR_CONTENT_TYPE            =   {status: false, status_code: 415, message: 'O Content-Type da requisição não é suportado. Precisa ser enviados dados no formato application/JSON!!!'}
+
+const ERROR_INTERNAL_SERVER         =   {status: false, status_code: 500, message: 'Ocorreram erros internos no servidor na camada de negócio da API, por favor contate o administrador do sistema!!!'}
+
 /********************  MENSAGENS DE SUCESSO ********************/
 
 const SUCESS_CREATED_ITEM           =   {status: true, status_code: 201,message: 'Item criado com sucesso no Banco de Dados!!!'}
+
+const SUCESS_DELETED_ITEM           =   {status: true, status_code: 200,message: 'Item deletado com sucesso no Banco de Dados!!!'}
 
 module.exports={
     ERROR_INVALID_ID,
@@ -27,5 +33,8 @@ module.exports={
     ERROR_INTERNAL_SERVER_DB,
     ERROR_INVALID,
     ERROR_REQUIRED_FIELDS,
-    SUCESS_CREATED_ITEM
+    SUCESS_CREATED_ITEM,
+    ERROR_CONTENT_TYPE,
+    ERROR_INTERNAL_SERVER,
+    SUCESS_DELETED_ITEM
 }

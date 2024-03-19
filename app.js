@@ -39,7 +39,7 @@ app.use((request, response, next) => {
 })
 
 //Cria um objeto do tipo JSON para receber os dados via body nas requisições POST ou PUT
-const bodyParserJSON = bodyParser.json
+const bodyParserJSON = bodyParser.json()
 
 /********************************** Imports e arquivos e bibioteca ************************************/
 const controllerFilmes = require('./controller/controller_filme.js')
@@ -116,15 +116,35 @@ app.get('/v2/acmefilmes/filme/:id', cors(), async function(request, response, ne
     //Obs: esse objeto foi criado no iício do projeto
 
 app.post('/v2/acmefilmes/filme', cors(), bodyParserJSON, async function(request, response, next){
+
+    //Recebe o content-type da requisição (a API deve receber somente application/JSON)
+    let contentType = request.headers['content-type']
+
+    console.log(contentType)
+
     //Recebe os dados encaminhados na requisição no body (JSON)
     let dadosBody = request.body
 
     //Encaminha os dados da requisição para a controller enviar para o BD
-    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody)
+    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody, contentType)
 
     response.status(resultDados.status_code)
     response.json(resultDados)
 })
+
+//ENDPOINT: Deletar um filme do Banco de Dados
+app.delete('/v2/acmefilmes/filmes/:id', cors(), async function(request, response, next){
+
+    let idFilme = request.params.id
+    
+    let dadosFilme = await controllerFilmes.setExcluirFilme(idFilme)
+
+    response.status(dadosFilme.status_code)
+    response.json(dadosFilme)
+
+})
+
+app.get('/v2/acmefilmes/')
 
 //Executa a API e faz ela ficar aguardando requisições
 app.listen(8080, function(){
