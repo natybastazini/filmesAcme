@@ -18,6 +18,7 @@
  *      Após a instalação do prisma, devemos rodar o comando abaxo para inicializar 
  *      o prisma:
  *      npx prisma init
+ * 
  **********************************************************************/
 
 //Import das bibliotecas do projeto
