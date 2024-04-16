@@ -9,7 +9,7 @@
 /********************  MENSAGENS DE ERRO ********************/
 const ERROR_INVALID_ID              =   {status: false, status_code: 400, message: 'O ID encaminhado na requisição não é válido!!!'}
 
-const ERROR_REQUIRED_FIELDS         =   {status: false, status_code: 400, message: 'Existem dados obrigatórios que não foram prreenchidos corretamente!!!'}
+const ERROR_REQUIRED_FIELDS         =   {status: false, status_code: 400, message: 'Existem dados obrigatórios que não foram preenchidos corretamente!!!'}
 
 const ERROR_NOT_FOUND               =   {status: false, status_code: 404, message: 'Nenhum item encontrado na requisição!!!'}
 

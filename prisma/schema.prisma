@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,9 +7,135 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model tbl_ator {
+  id                     Int                      @id @unique(map: "id") @default(autoincrement())
+  nome                   String                   @db.VarChar(100)
+  data_nascimento        DateTime?                @db.Date
+  data_falecimento       DateTime?                @db.Date
+  foto                   String?                  @db.VarChar(200)
+  biografia              String?                  @db.Text
+  sexo_id                Int?
+  tbl_sexo               tbl_sexo?                @relation(fields: [sexo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_ator_ibfk_1")
+  tbl_ator_nacionalidade tbl_ator_nacionalidade[]
+  tbl_filme_ator         tbl_filme_ator[]
 
-// Exemplo de como criar uma tabela no BD usando o ORM do prisma
-model tbl_teste {
-  id Int @id @default(autoincrement())
-  nome String
+  @@index([sexo_id], map: "sexo_id")
+}
+
+model tbl_ator_nacionalidade {
+  id                Int                @id @unique(map: "id") @default(autoincrement())
+  ator_id           Int?
+  nacionalidade_id  Int?
+  tbl_ator          tbl_ator?          @relation(fields: [ator_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_ator_nacionalidade_ibfk_1")
+  tbl_nacionalidade tbl_nacionalidade? @relation(fields: [nacionalidade_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_ator_nacionalidade_ibfk_2")
+
+  @@index([ator_id], map: "ator_id")
+  @@index([nacionalidade_id], map: "nacionalidade_id")
+}
+
+model tbl_classificacao {
+  id        Int         @id @unique(map: "id") @default(autoincrement())
+  sigla     String      @db.VarChar(4)
+  nome      String?     @db.VarChar(100)
+  descricao String      @db.VarChar(300)
+  icone     String?     @db.VarChar(150)
+  tbl_filme tbl_filme[]
+}
+
+model tbl_diretor {
+  id                        Int                         @id @unique(map: "id") @default(autoincrement())
+  nome                      String                      @db.VarChar(100)
+  data_nascimento           DateTime?                   @db.Date
+  data_falecimento          DateTime?                   @db.Date
+  foto                      String?                     @db.VarChar(200)
+  biografia                 String?                     @db.Text
+  sexo_id                   Int?
+  tbl_sexo                  tbl_sexo?                   @relation(fields: [sexo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_diretor_ibfk_1")
+  tbl_diretor_nacionalidade tbl_diretor_nacionalidade[]
+  tbl_filme_diretor         tbl_filme_diretor[]
+
+  @@index([sexo_id], map: "sexo_id")
+}
+
+model tbl_diretor_nacionalidade {
+  id                Int                @id @unique(map: "id") @default(autoincrement())
+  diretor_id        Int?
+  nacionalidade_id  Int?
+  tbl_diretor       tbl_diretor?       @relation(fields: [diretor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_diretor_nacionalidade_ibfk_1")
+  tbl_nacionalidade tbl_nacionalidade? @relation(fields: [nacionalidade_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_diretor_nacionalidade_ibfk_2")
+
+  @@index([diretor_id], map: "diretor_id")
+  @@index([nacionalidade_id], map: "nacionalidade_id")
+}
+
+model tbl_filme {
+  id                Int                 @id @unique(map: "id") @default(autoincrement())
+  nome              String              @db.VarChar(100)
+  sinopse           String              @db.Text
+  duracao           DateTime            @db.Time(0)
+  data_lancamento   DateTime            @db.Date
+  data_relancamento DateTime?           @db.Date
+  foto_capa         String              @db.VarChar(150)
+  valor_unitario    Float?              @db.Float
+  classificacao_id  Int
+  tbl_classificacao tbl_classificacao   @relation(fields: [classificacao_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_filme_ibfk_1")
+  tbl_filme_ator    tbl_filme_ator[]
+  tbl_filme_diretor tbl_filme_diretor[]
+  tbl_filme_genero  tbl_filme_genero[]
+
+  @@index([classificacao_id], map: "classificacao_id")
+}
+
+model tbl_filme_ator {
+  id        Int        @id @default(autoincrement())
+  filme_id  Int?
+  ator_id   Int?
+  tbl_filme tbl_filme? @relation(fields: [filme_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_filme_ator_ibfk_1")
+  tbl_ator  tbl_ator?  @relation(fields: [ator_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_filme_ator_ibfk_2")
+
+  @@index([ator_id], map: "ator_id")
+  @@index([filme_id], map: "filme_id")
+}
+
+model tbl_filme_diretor {
+  id          Int          @id @default(autoincrement())
+  filme_id    Int?
+  diretor_id  Int?
+  tbl_filme   tbl_filme?   @relation(fields: [filme_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_filme_diretor_ibfk_1")
+  tbl_diretor tbl_diretor? @relation(fields: [diretor_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_filme_diretor_ibfk_2")
+
+  @@index([diretor_id], map: "diretor_id")
+  @@index([filme_id], map: "filme_id")
+}
+
+model tbl_filme_genero {
+  id         Int         @id @unique(map: "id") @default(autoincrement())
+  filme_id   Int?
+  genero_id  Int?
+  tbl_filme  tbl_filme?  @relation(fields: [filme_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_filme_genero_ibfk_1")
+  tbl_genero tbl_genero? @relation(fields: [genero_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "tbl_filme_genero_ibfk_2")
+
+  @@index([filme_id], map: "filme_id")
+  @@index([genero_id], map: "genero_id")
+}
+
+model tbl_genero {
+  id               Int                @id @unique(map: "id") @default(autoincrement())
+  nome             String             @db.VarChar(45)
+  tbl_filme_genero tbl_filme_genero[]
+}
+
+model tbl_nacionalidade {
+  id                        Int                         @id @unique(map: "id") @default(autoincrement())
+  nome                      String                      @db.VarChar(100)
+  tbl_ator_nacionalidade    tbl_ator_nacionalidade[]
+  tbl_diretor_nacionalidade tbl_diretor_nacionalidade[]
+}
+
+model tbl_sexo {
+  id          Int           @id @unique(map: "id") @default(autoincrement())
+  sigla       String        @db.VarChar(1)
+  nome        String        @db.VarChar(45)
+  tbl_ator    tbl_ator[]
+  tbl_diretor tbl_diretor[]
 }

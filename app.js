@@ -44,6 +44,9 @@ const bodyParserJSON = bodyParser.json()
 
 /********************************** Imports e arquivos e bibioteca ************************************/
 const controllerFilmes = require('./controller/controller_filme.js')
+const controllerAtores = require('./controller/controller_ator.js')
+const controllerDiretores = require('./controller/controller_diretor.js')
+const controllerGeneros = require('./controller/controller_genero.js')
 const { warnEnvConflicts } = require('@prisma/client/runtime/library.js')
 /**********************************************************************/
 
@@ -59,7 +62,7 @@ app.get('/v1/acmefilmes', cors(), async function(request, response, next){
         
 })
 
-//ENDPOINT V2
+//ENDPOINT V2!!
 
 app.get('/v2/acmefilmes/filmes', cors(), async function(request, response, next){
     let dadosFilmes = await controllerFilmes.getListarFilmes()
@@ -87,7 +90,8 @@ app.get('/v1/filmesacme/:id', cors(), async function(request, response, next){
     // response.status(200)
 })
 
-// TERCEIRO ENDPOINT
+// TERCEIRO ENDPOINT Filtra pelo nome
+
 app.get('/v1/acmefilmes/filmes/filtro', cors(), async function(request, response, next){
     let nomeFilme = request.query.nome
 
@@ -101,6 +105,7 @@ app.get('/v1/acmefilmes/filmes/filtro', cors(), async function(request, response
 
 
 // ENDPOINT: Retorna os dados do filme filtrando pelo ID
+
 app.get('/v2/acmefilmes/filme/:id', cors(), async function(request, response, next){
     //Recebe o id da requisição do filme
     let idFilme = request.params.id
@@ -134,7 +139,7 @@ app.post('/v2/acmefilmes/filme', cors(), bodyParserJSON, async function(request,
 })
 
 //ENDPOINT: Deletar um filme do Banco de Dados
-app.delete('/v2/acmefilmes/filmes/:id', cors(), async function(request, response, next){
+app.delete('/v2/acmefilmes/filme/:id', cors(), async function(request, response, next){
 
     let idFilme = request.params.id
     
@@ -146,7 +151,7 @@ app.delete('/v2/acmefilmes/filmes/:id', cors(), async function(request, response
 })
 
 //ENDPOINT: Update filme do Banco de Dados
-app.put('/v2/acmefilmes/filmes/:id', cors(), async function(request, response, next){
+app.put('/v2/acmefilmes/filme/:id', cors(), async function(request, response, next){
 
     let idFilme = request.params.id
     let contentType = request.headers['content-type']
@@ -157,6 +162,170 @@ app.put('/v2/acmefilmes/filmes/:id', cors(), async function(request, response, n
     response.status(dadosAtualizados.status_code);
     response.json(dadosAtualizados)
 })
+
+/**********************************************************************/
+
+//ENDPOINT ATOR
+
+// Listar todos os atores inseridos no banco de dados.
+app.get('/v2/acmefilmes/atores', cors(), async function(request, response, next){
+    let dadosAtor = await controllerAtores.getListarAtores()
+
+    if(dadosAtor){
+        response.json(dadosAtor)
+        response.status(200)
+    }else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status(404)
+    }
+})
+
+// Busca o ator pelo ID.
+app.get('/v2/acmefilmes/ator/:id', cors(), async function(request, response, next){
+    let idAtor = request.params.id
+
+    let dadosAtor = await controllerAtores.getAtorID(idAtor)
+
+    response.status(dadosAtor.status_code)
+    response.json(dadosAtor)
+})
+
+// Busca o ator pelo nome.
+app.get('/v1/acmefilmes/atores/filtro', cors(), async function(request, response, next){
+    let nomeAtor = request.query.nome
+
+    console.log(nomeAtor)
+
+    let dadosAtor = await controllerAtores.getAtorNome(nomeAtor)
+
+    response.status(dadosAtor.status_code)
+    response.json(dadosAtor)
+})
+
+// Inserir um novo ator no banco de dados.
+app.post('/v2/acmefilmes/ator', cors(), bodyParserJSON, async function(request, response, next){
+
+    //Recebe o content-type da requisição (a API deve receber somente application/JSON)
+    let contentType = request.headers['content-type']
+
+    console.log(contentType)
+
+    //Recebe os dados encaminhados na requisição no body (JSON)
+    let dadosBody = request.body
+
+    //Encaminha os dados da requisição para a controller enviar para o BD
+    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody, contentType)
+
+    response.status(resultDados.status_code)
+    response.json(resultDados)
+})
+
+//ENDPOINT: Deletar um ator do Banco de Dados
+app.delete('/v2/acmefilmes/ator/:id', cors(), async function(request, response, next){
+
+    let idAtor = request.params.id
+    
+    let dadosAtor = await controllerFilmes.setExcluirFilme(idAtor)
+
+    response.status(dadosAtor.status_code)
+    response.json(dadosAtor)
+
+})
+
+//ENDPOINT: Update ator do Banco de Dados
+app.put('/v2/acmefilmes/ator/:id', cors(), async function(request, response, next){
+
+    let idAtor = request.params.id
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    
+    let dadosAtualizados = await controllerAtores.setAtualizarAtor(dadosBody, contentType, idAtor)
+    
+    response.status(dadosAtualizados.status_code);
+    response.json(dadosAtualizados)
+})
+
+/**********************************************************************/
+
+//ENDPOINT DIRETOR
+
+// Listar todos os diretores inseridos no banco de dados.
+app.get('/v2/acmefilmes/diretores', cors(), async function(request, response, next){
+    let dadosDiretor = await controllerDiretores.getListarDiretores()
+
+    if(dadosDiretor){
+        response.json(dadosDiretor)
+        response.status(200)
+    }else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status(404)
+    }
+})
+
+// Busca o diretor pelo ID.
+app.get('/v2/acmefilmes/diretor/:id', cors(), async function(request, response, next){
+    let idDiretor = request.params.id
+
+    let dadosDiretor = await controllerDiretores.getDiretorID(idDiretor)
+
+    response.status(dadosDiretor.status_code)
+    response.json(dadosDiretor)
+})
+
+// Busca o diretor pelo nome.
+app.get('/v1/acmefilmes/diretores/filtro', cors(), async function(request, response, next){
+    let nomeDiretor = request.query.nome
+
+    console.log(nomeDiretor)
+
+    let dadosDiretor = await controllerDiretores.getDiretorNome(nomeDiretor)
+
+    response.status(dadosDiretor.status_code)
+    response.json(dadosDiretor)
+})
+
+/**********************************************************************/
+
+// ENDPOINT GÊNERO
+
+// Listar todos os gêneros inseridos no banco de dados.
+app.get('/v2/acmefilmes/generos', cors(), async function(request, response, next){
+    let dadosGeneros = await controllerGeneros.getListarGeneros()
+
+    if(dadosGeneros){
+        response.json(dadosGeneros)
+        response.status(200)
+    }else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status(404)
+    }
+})
+
+// Busca o ator pelo ID.
+app.get('/v2/acmefilmes/genero/:id', cors(), async function(request, response, next){
+    let idGenero = request.params.id
+
+    let dadosGeneros = await controllerGeneros.getBuscarGenero(idGenero)
+
+    response.status(dadosGeneros.status_code)
+    response.json(dadosGeneros)
+})
+
+// Busca o ator pelo nome.
+app.get('/v1/acmefilmes/generos/filtro', cors(), async function(request, response, next){
+    let nomeGenero = request.query.nome
+
+    console.log(nomeGenero)
+
+    let dadosGeneros = await controllerGeneros.getBuscarGeneroNome(nomeGenero)
+
+    response.status(dadosGeneros.status_code)
+    response.json(dadosGeneros)
+})
+
+
+
+
 
 //Executa a API e faz ela ficar aguardando requisições
 app.listen(8080, function(){

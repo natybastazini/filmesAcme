@@ -1,7 +1,7 @@
 var filmes = {
     "filmes": [
       {
-		"id": 1,  
+		    "id": 1,  
         "nome": "O Segredo do Vale",
         "sinopse": "Um drama emocionante que explora os segredos de uma pequena cidade no interior.",
         "duracao": "2 horas e 15 minutos",
@@ -11,7 +11,7 @@ var filmes = {
         "valor_unitario": 29.99
       },
       {
-		"id": 2,  
+		    "id": 2,  
         "nome": "A Herança Perdida",
         "sinopse": "Um filme de suspense que segue a jornada de um herdeiro em busca de seu passado misterioso.",
         "duracao": "2 horas e 30 minutos",
@@ -21,7 +21,7 @@ var filmes = {
         "valor_unitario": 24.99
       },
       {
-		"id": 3,  
+		    "id": 3,  
         "nome": "A Viagem no Tempo",
         "sinopse": "Uma aventura sci-fi que leva os espectadores a uma jornada através das eras.",
         "duracao": "2 horas",

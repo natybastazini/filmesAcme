@@ -5,10 +5,10 @@
  * Versao: 1.0
  **********************************************************************/
 
-var acmesFilmes = require('../modulo/filmes.js')
+var acmeFilmes = require('../modulo/filmes.js')
 
 const listarDados = () => {
-    let filmes = acmesFilmes.filmes
+    let filmes = acmeFilmes.filmes
     let arrayDados = []
     let jsonDados = {}
     
@@ -29,7 +29,7 @@ const listarDados = () => {
 }
 
 const listarDadosId = (id) => {
-    let filmes = acmesFilmes.filmes
+    let filmes = acmeFilmes.filmes
     let jsonDados = null
     let status = false
 
@@ -49,6 +49,7 @@ const listarDadosId = (id) => {
         return false
     }
 }
+
 
 // console.log(listarDados())
 // console.log(listarDadosId(2))

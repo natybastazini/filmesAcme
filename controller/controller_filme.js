@@ -46,6 +46,7 @@ const setInserirNovoFilme = async function (dadosFilme, contentType){
                     dadosValidated = true // Se a data não existir nos dados
                 }
 
+            
                 if(dadosValidated){
                     
                         //Encaminha os dados para o DAO inserir no BD
@@ -53,8 +54,8 @@ const setInserirNovoFilme = async function (dadosFilme, contentType){
 
                     //Validação para verificar se os dados foram inseridos pelo DAO no BD
                     if(novoFilme){
-                        let idFilme = await filmesDAO.selectUltimoId()
-                        
+                       
+                    let idFilme = await filmesDAO.selectUltimoId()                     
 
                         dadosFilme.id = Number(idFilme[0].id)
                         //Cria o padrão JSON para retorno dos dados criados no BD
@@ -63,7 +64,9 @@ const setInserirNovoFilme = async function (dadosFilme, contentType){
                         dadosAtualizados.message        = message.SUCESS_CREATED_ITEM.message
                         dadosAtualizados.filme          = dadosFilme
             
+                       
                         return dadosAtualizados // 201
+
                     }else{
                         return message.ERROR_INTERNAL_SERVER_DB // 500 Erro na camada do DAO
                     }
