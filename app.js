@@ -185,7 +185,7 @@ app.get('/v2/acmefilmes/atores', cors(), async function(request, response, next)
 app.get('/v2/acmefilmes/ator/:id', cors(), async function(request, response, next){
     let idAtor = request.params.id
 
-    let dadosAtor = await controllerAtores.getAtorID(idAtor)
+    let dadosAtor = await controllerAtores.getAtor(idAtor)
 
     response.status(dadosAtor.status_code)
     response.json(dadosAtor)

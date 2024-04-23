@@ -57,18 +57,26 @@ const getAtor = async function(id){
     }else{
 
         //Solicita para o DAO a busca do ator pelo ID.
+       
         let dadosAtor = await atorDAO.selectByIdAtor(id)
-        let sexoJSON = await sexoDAO.selectByIdSexo(ator.sexo_id)
-        ator.sexo = sexoJSON
-        let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(ator.id)
-        ator.nacionalidade = nacionalidadeJSON
-
+        
         //Validação para verificar se existem dados encontrados
         if(dadosAtor){
+            
             //Validação para verificar se existem dados de retorno
             if(dadosAtor.length > 0){
 
-                atoresJSON.info = dadosAtor
+                    let sexoJSON = await sexoDAO.selectByIdSexo(dadosAtor[0].sexo_id)
+                    dadosAtor[0].sexo = sexoJSON
+                    console.log(dadosAtor)
+                    let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(dadosAtor[0].id)
+                
+                    if(nacionalidadeJSON.length > 0){ 
+                        dadosAtor[0].nacionalidade = nacionalidadeJSON
+                        console.log(dadosAtor)
+                    }
+
+                atoresJSON.ator = dadosAtor
                 atoresJSON.status_code = 200
 
             return atoresJSON //200
@@ -93,6 +101,18 @@ const  getAtorNome = async function(nome){
         return message.ERROR_INVALID
     }else{
         let dadosAtor = await atorDAO.selectByNomeAtor(nomeAtor)
+
+        const promisse = dadosAtor.map(async(ator)=>{
+            let sexoJSON = await sexoDAO.selectByIdSexo(ator.sexo_id)
+            ator.sexo = sexoJSON
+            let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(ator.id)
+           
+            if(nacionalidadeJSON.length > 0){ 
+                ator.nacionalidade = nacionalidadeJSON
+            }
+        })
+
+        await Promise.all(promisse)
 
         if(dadosAtor){
             if(dadosAtor.length > 0){
@@ -123,10 +143,11 @@ const setInserirNovoAtor = async function (dadosAtor, contentType){
             if( dadosAtor.nome             == '' || dadosAtor.nome              == undefined || dadosAtor.nome.length               > 80        ||
                 dadosAtor.data_nascimento  == '' || dadosAtor.data_nascimento   == undefined || dadosAtor.data_nascimento.length    > 10        ||
                 dadosAtor.data_falecimento == '' || dadosAtor.data_falecimento  == undefined || dadosAtor.data_falecimento.length   > 10        ||
-                dadosAtor.foto             == '' || dadosAtor.foto              == undefined || dadosAtor.foto .length              > 200       ||
-                dadosAtor.biografia        == '' || dadosAtor.biografia         == undefined || dadosAtor.biografia .length         > 65000     ||
-                dadosAtor.sexo_id          == '' || dadosAtor.sexo_id           == undefined || dadosAtor.sexo_id.length            > 80        
+                dadosAtor.foto             == '' || dadosAtor.foto              == undefined || dadosAtor.foto.length               > 200       ||
+                dadosAtor.biografia        == '' || dadosAtor.biografia         == undefined || dadosAtor.biografia.length          > 65000     ||
+                dadosAtor.sexo_id          == '' || dadosAtor.sexo_id           == undefined || dadosAtor.sexo_id.length            > 80      
             ){
+                console.log(dadosAtor)  
                 return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorreto
             }else{
                 let dadosValidated = false
