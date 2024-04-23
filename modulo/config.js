@@ -27,6 +27,8 @@ const SUCESS_CREATED_ITEM           =   {status: true, status_code: 201,message:
 
 const SUCESS_DELETED_ITEM           =   {status: true, status_code: 200,message: 'Item deletado com sucesso no Banco de Dados!!!'}
 
+const SUCESS_UPDATED_ITEM           =   {status: true, status_code: 200,message: 'Item atualizado com sucesso no Banco de Dados!!!'}
+
 module.exports={
     ERROR_INVALID_ID,
     ERROR_NOT_FOUND,
@@ -36,5 +38,6 @@ module.exports={
     SUCESS_CREATED_ITEM,
     ERROR_CONTENT_TYPE,
     ERROR_INTERNAL_SERVER,
-    SUCESS_DELETED_ITEM
+    SUCESS_DELETED_ITEM,
+    SUCESS_UPDATED_ITEM
 }

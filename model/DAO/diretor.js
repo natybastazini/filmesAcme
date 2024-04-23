@@ -1,3 +1,4 @@
+
 /**********************************************************************
  * Objetivo: Criar  interação com o banco de dados MySQL de filmes.
  * Data: 16/04/2024.
@@ -18,7 +19,7 @@ const insertDiretor = async function(dadosDiretor){
         ){
                 sql = `insert into tbl_diretor (
                             nome,
-							data_nascimento,
+                            data_nascimento,
                             data_falecimento, 
                             foto,
                             biografia,
@@ -65,9 +66,58 @@ const insertDiretor = async function(dadosDiretor){
     }
 }
 
+//Atualizar um diretor existente filtrando pelo ID.
+
+const updateDiretor= async function(id){
+    try {
+
+        let sql
+
+        if( dadosDiretor.data_falecimento == null ||
+            dadosDiretor.data_falecimento == '' ||
+            dadosDiretor.data_falecimento == undefined
+        ){    
+            sql = `update tbl_diretor set
+                                        nome = '${dadosDiretor.nome}',
+                                        data_nascimento = '${dadosDiretor.data_nascimento}',
+                                        data_falecimento = null,
+                                        foto = '${dadosDiretor.foto}',
+                                        biografia = ${dadosDiretor.biografia},
+                                        sexo_id = ${dadosDiretor.sexo_id}
+                                        where id = ${idAtor}`
+            
+        } else {
+
+            sql = `update tbl_diretor set 
+                                        nome = '${dadosDiretor.nome}',
+                                        data_nascimento = '${dadosDiretor.data_nascimento}',
+                                        data_falecimento = '${dadosDiretor.data_falecimento}',
+                                        foto = '${dadosDiretor.foto}',
+                                        biografia = ${dadosDiretor.biografia},
+                                        sexo_id = ${dadosDiretor.sexo_id}
+                                        where id = ${idAtor}`
+
+        }
+
+        // Executa o script SQL no Banco de Dados (devemos usar o comando execute e não o query)
+        // O comando execute deve ser utilizado para INSERT, UPDATE, DELETE
+        let resultado = await prisma.$executeRawUnsafe(sql)
+        
+        // Validação para verificar se o insert funcionou no DB
+        if(resultado)
+            return true
+        else
+            return false
+    } catch (error) {
+        return false
+    }
+
+}
+
+
 const deleteDiretor = async function(id){
     try {
-        //Exclui o Ator pelo ID
+        //Exclui o diretor pelo ID
         let sql = `delete from tbl_diretor where id = ${id}`
 
         let rsDiretor = await prisma.$queryRawUnsafe(sql)
@@ -78,7 +128,7 @@ const deleteDiretor = async function(id){
 
 }
 
-const selectAllDiretor = async function(){
+const selectAllDiretores = async function(){
 
     //Script SQL para listar todos os registros
     let sql = 'select * from tbl_diretor order by id desc'
@@ -121,7 +171,7 @@ const selectByNomeDiretor = async function(nome){
 const selectUltimoId = async function(){
         
     try {
-        sql = `select cast(last_insert_id() as decimal) as id from tbl_ator limit 1;`
+        sql = `select cast(last_insert_id() as decimal) as id from tbl_diretor limit 1;`
     
         let rsAtor = await prisma.$queryRawUnsafe(sql)
         return rsAtor
@@ -133,10 +183,11 @@ const selectUltimoId = async function(){
 }
 
 module.exports = {
-    selectAllDiretor,
+    selectAllDiretores,
     selectByIdDiretor,
     selectByNomeDiretor,
     selectUltimoId,
     insertDiretor,
+    updateDiretor,
     deleteDiretor
 }

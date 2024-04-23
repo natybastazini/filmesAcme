@@ -6,7 +6,8 @@
  **********************************************************************/
 
 //Import da biblioteca doo prisma client
-const { PrismaClient } = require ('@prisma/client')
+const { PrismaClient } = require ('@prisma/client');
+const { filmes } = require('../../modulo/filmes');
 
 //Instanciando o objeto prisma com as caraterísticas do prisma client
 const prisma = new PrismaClient()
@@ -81,12 +82,12 @@ const insertFilme = async function(dadosFilme){
 
 //Atualizar um filme existente filtrando pelo ID.
 
-const updateFilme = async function(id){
+const updateFilme = async function(id, dadosFilme){
     try {
 
         let sql
 
-        if(dadosFilme.data_relancamento == null ||
+        if( dadosFilme.data_relancamento == null ||
             dadosFilme.data_relancamento == '' ||
             dadosFilme.data_relancamento == undefined
         ){    
@@ -98,7 +99,7 @@ const updateFilme = async function(id){
                                         data_relancamento = null,
                                         foto_capa = '${dadosFilme.foto_capa}',
                                         valor_unitario = ${dadosFilme.valor_unitario}
-                                        where id = ${idFilme}`
+                                        where id = ${id}`
             
         } else {
 
@@ -110,9 +111,11 @@ const updateFilme = async function(id){
                                         data_relancamento = '${dadosFilme.data_relancamento}',
                                         foto_capa = '${dadosFilme.foto_capa}',
                                         valor_unitario = ${dadosFilme.valor_unitario}
-                                    where id = ${idFilme}`
+                                        where id = ${id}`
 
         }
+
+        
 
         // Executa o script SQL no Banco de Dados (devemos usar o comando execute e não o query)
         // O comando execute deve ser utilizado para INSERT, UPDATE, DELETE
@@ -123,8 +126,9 @@ const updateFilme = async function(id){
             return true
         else
             return false
-    } catch (error) {
+    } catch (error) {console.log(sql)
         return false
+        
     }
 
 }
@@ -180,9 +184,7 @@ const selectByIdFilme = async function(id){
          
     } catch (error) {
         return false
-    }
-
-   
+    } 
 }
 
 //Buscar o filme existente filtrando pelo nome.

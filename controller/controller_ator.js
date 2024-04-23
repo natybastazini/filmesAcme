@@ -8,15 +8,32 @@
 
 const message = require('../modulo/config.js')
 const atorDAO = require('../model/DAO/ator.js')
+const sexoDAO = require('../model/DAO/sexo.js')
+const nacionalidadeDAO = require('../model/DAO/nacionalidade.js')
+
+//Função para retornar todos os atores do banco de dados.
 
 const getListarAtores = async function(){
 
     let atoresJSON = {}
-
     let dadosAtores = await atorDAO.selectAllAtores()
 
     if(dadosAtores){
-        atoresJSON.filmes = dadosAtores
+
+        const promisse = dadosAtores.map(async(ator)=>{
+            let sexoJSON = await sexoDAO.selectByIdSexo(ator.sexo_id)
+            ator.sexo = sexoJSON
+            let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(ator.id)
+           
+            if(nacionalidadeJSON.length > 0){ 
+                ator.nacionalidade = nacionalidadeJSON
+            }
+        })
+
+        await Promise.all(promisse)
+
+        atoresJSON.ator = dadosAtores
+
         atoresJSON.quantidade = dadosAtores.length
         atoresJSON.status_code = 200
 
@@ -26,11 +43,12 @@ const getListarAtores = async function(){
     }
 }
 
-//ID
-const getAtorID = async function(id){
-    //Recebe o Id do filme.
+//Função para buscar um ator pelo ID.
+
+const getAtor = async function(id){
+    //Recebe o Id do ator.
     let idAtor = id
-    //Variável para criar o JSON de retorno do filme.
+    //Variável para criar o JSON de retorno do ator.
     let atoresJSON = {}
 
     //Validação para ID vazio, indefinido ou não numérico.
@@ -38,8 +56,12 @@ const getAtorID = async function(id){
         return message.ERROR_INVALID_ID
     }else{
 
-        //Solicita para o DAO a busca do filme pelo ID.
+        //Solicita para o DAO a busca do ator pelo ID.
         let dadosAtor = await atorDAO.selectByIdAtor(id)
+        let sexoJSON = await sexoDAO.selectByIdSexo(ator.sexo_id)
+        ator.sexo = sexoJSON
+        let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(ator.id)
+        ator.nacionalidade = nacionalidadeJSON
 
         //Validação para verificar se existem dados encontrados
         if(dadosAtor){
@@ -61,7 +83,8 @@ const getAtorID = async function(id){
 
 }
 
-//Função para buscar um filme pelo nome.
+//Função para buscar um ator pelo nome.
+
 const  getAtorNome = async function(nome){
     let nomeAtor = nome
     let atoresJSON = {}
@@ -88,7 +111,8 @@ const  getAtorNome = async function(nome){
         
 }
 
-//Função para inserir um novo filme no banco de dados.
+//Função para inserir um novo ator no banco de dados.
+
 const setInserirNovoAtor = async function (dadosAtor, contentType){
 
     try {
@@ -107,15 +131,15 @@ const setInserirNovoAtor = async function (dadosAtor, contentType){
             }else{
                 let dadosValidated = false
 
-                //Validação de digitação para a data de relancçamento que não é campo obrigatório
-                if(     dadosFilme.data_relancamento != null && 
-                        dadosFilme.data_relancamento != undefined && 
-                        dadosFilme.data_relancamento != ""
+                //Validação de digitação para a data de falecimento que não é campo obrigatório
+                if(     dadosAtor.data_falecimento != null && 
+                        dadosAtor.data_falecimento != undefined && 
+                        dadosAtor.data_falecimento != ""
                     ){
-                        if(dadosFilme.data_relancamento.length != 10)
+                        if(dadosAtor.data_falecimento.length != 10)
                             return message.ERROR_REQUIRED_FIELDS // 400 Campos origatórios / Incorretos
                         else
-                            dadosValidated = true // Se a dataestiver exatamente 10 char
+                            dadosValidated = true // Se a data estiver exatamente 10 char
                 }else{
                     //Variável para validar se poderemos chamar o DAO 
                     dadosValidated = true // Se a data não existir nos dados
@@ -125,19 +149,19 @@ const setInserirNovoAtor = async function (dadosAtor, contentType){
                 if(dadosValidated){
                     
                         //Encaminha os dados para o DAO inserir no BD
-                    let novoFilme = await filmesDAO.insertFilme(dadosFilme)
+                        let novoAtor = await atorDAO.insertAtor(dadosAtor)
 
                     //Validação para verificar se os dados foram inseridos pelo DAO no BD
-                    if(novoFilme){
+                    if(novoAtor){
                        
-                    let idFilme = await filmesDAO.selectUltimoId()                     
+                    let idAtor = await atorDAO.selectUltimoId()                     
 
-                        dadosFilme.id = Number(idFilme[0].id)
+                        dadosAtor.id = Number(idAtor[0].id)
                         //Cria o padrão JSON para retorno dos dados criados no BD
                         dadosAtualizados.status         = message.SUCESS_CREATED_ITEM.status;
                         dadosAtualizados.status_code    = message.SUCESS_CREATED_ITEM.status_code;
                         dadosAtualizados.message        = message.SUCESS_CREATED_ITEM.message
-                        dadosAtualizados.filme          = dadosFilme
+                        dadosAtualizados.ator           = dadosAtor
             
                        
                         return dadosAtualizados // 201
@@ -156,8 +180,118 @@ const setInserirNovoAtor = async function (dadosAtor, contentType){
 
 }
 
+//Função para atualizar um ator existente.
+
+const setAtualizarAtor = async (id, dadosAtor, contentType) =>{
+    try {
+
+        let idAtor = id; 
+
+        if (idAtor == '' || idAtor == null || idAtor == isNaN(idAtor)) {
+            return message.ERROR_INVALID_ID
+        } else {
+
+            if(String(contentType).toLowerCase() == 'application/json'){
+                let resultDadosAtor = {}
+                
+                // Validação para verificar campos obrigatórios e consistencia de dados
+                if( dadosAtor.nome             == '' || dadosAtor.nome              == undefined || dadosAtor.nome.length               > 80        ||
+                    dadosAtor.data_nascimento  == '' || dadosAtor.data_nascimento   == undefined || dadosAtor.data_nascimento.length    > 10        ||
+                    dadosAtor.data_falecimento == '' || dadosAtor.data_falecimento  == undefined || dadosAtor.data_falecimento.length   > 10        ||
+                    dadosAtor.foto             == '' || dadosAtor.foto              == undefined || dadosAtor.foto .length              > 200       ||
+                    dadosAtor.biografia        == '' || dadosAtor.biografia         == undefined || dadosAtor.biografia .length         > 65000     ||
+                    dadosAtor.sexo_id          == '' || dadosAtor.sexo_id           == undefined || dadosAtor.sexo_id.length            > 80  
+                ){
+                    return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorreto
+                }else{
+                    let dadosValidated = false
+
+                    //Validação de digitação para a data de falecimento que não é campo obrigatório
+                    if(     dadosAtor.data_falecimento != null && 
+                            dadosAtor.data_falecimento != undefined && 
+                            dadosAtor.data_falecimento != ""
+                        ){
+                            if(dadosAtor.data_falecimento.length != 10)
+                                return message.ERROR_REQUIRED_FIELDS // 400 Campos origatórios / Incorretos
+                            else
+                                dadosValidated = true // Se a dataestiver exatamente 10 char
+                    }else{
+                        //Variável para validar se poderemos chamar o DAO 
+                        dadosValidated = true // Se a data não existir nos dados
+                    }
+
+                    if(dadosValidated){
+                        
+                            //Encaminha os dados para o DAO inserir no BD
+                            let novoAtor = await atorDAO.updateAtor(dadosAtor)
+
+                        //Validação para verificar se os dados foram inseridos pelo DAO no BD
+                        if(novoAtor){
+
+                            let idAtor = await atorDAO.selectUltimoId()
+                            
+                            dadosAtor.id = Number(idAtor[0].id)
+
+                            //Cria o padrão JSON para retorno dos dados criados no BD
+                            resultDadosAtor.status         = message.SUCESS_CREATED_ITEM.status;
+                            resultDadosAtor.status_code    = message.SUCESS_CREATED_ITEM.status_code;
+                            resultDadosAtor.message        = message.SUCESS_CREATED_ITEM.message
+                            resultDadosAtor.ator           = dadosAtor
+                
+                            return resultDadosAtor // 201
+                        }else{
+                            return message.ERROR_INTERNAL_SERVER_DB // 500 Erro na camada do DAO
+                        }
+                    }
+                }
+            }else{
+                return message.ERROR_CONTENT_TYPE // 415 Erro no content-type da requisição
+            }
+        }     
+    } catch (error) {
+        return message.ERROR_INTERNAL_SERVER // 500 Erro na camada de negócio da aplicação
+    }
+}
+
+//Função para excluir um ator existente.
+
+const setExcluirAtor = async function(id){
+
+    try { 
+
+        let idAtor = id
+   
+        if(idAtor == '' || idAtor == undefined || isNaN(idAtor)){
+            return message.ERROR_INVALID_ID
+        }else{
+            
+
+            let chamarConst = await atorDAO.selectByIdAtor(idAtor)
+
+            if(chamarConst.length > 0){
+
+                let dadosAtor = await atorDAO.deleteAtor(id)
+              
+                if(dadosAtor){
+
+                return message.SUCESS_DELETED_ITEM //200
+                }else{
+                    return message.SUCESS_DELETED_ITEM //201
+                }
+            }else{
+                return message.ERROR_NOT_FOUND //500
+            }
+        }
+    } catch (error) {
+        return message.ERROR_INTERNAL_SERVER
+    }
+}
+
 module.exports = {
-    getAtorID,
+    getAtor,
     getAtorNome,
-    getListarAtores
+    getListarAtores,
+    setInserirNovoAtor,
+    setAtualizarAtor,
+    setExcluirAtor
 }

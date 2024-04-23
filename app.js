@@ -46,7 +46,8 @@ const bodyParserJSON = bodyParser.json()
 const controllerFilmes = require('./controller/controller_filme.js')
 const controllerAtores = require('./controller/controller_ator.js')
 const controllerDiretores = require('./controller/controller_diretor.js')
-const controllerGeneros = require('./controller/controller_genero.js')
+const controllerGenero = require('./controller/controller_genero.js')
+const controllerClassificacao = require('./controller/controller_classificacao.js')
 const { warnEnvConflicts } = require('@prisma/client/runtime/library.js')
 /**********************************************************************/
 
@@ -151,13 +152,13 @@ app.delete('/v2/acmefilmes/filme/:id', cors(), async function(request, response,
 })
 
 //ENDPOINT: Update filme do Banco de Dados
-app.put('/v2/acmefilmes/filme/:id', cors(), async function(request, response, next){
+app.put('/v2/acmefilmes/filme/atualizado/:id', cors(), bodyParserJSON, async function(request, response, next){
 
     let idFilme = request.params.id
     let contentType = request.headers['content-type']
     let dadosBody = request.body
     
-    let dadosAtualizados = await controllerFilmes.setAtualizarFilme(dadosBody, contentType, idFilme)
+    let dadosAtualizados = await controllerFilmes.setAtualizarFilme(idFilme,  contentType, dadosBody)
     
     response.status(dadosAtualizados.status_code);
     response.json(dadosAtualizados)
@@ -214,7 +215,7 @@ app.post('/v2/acmefilmes/ator', cors(), bodyParserJSON, async function(request, 
     let dadosBody = request.body
 
     //Encaminha os dados da requisição para a controller enviar para o BD
-    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody, contentType)
+    let resultDados = await controllerAtores.setInserirNovoAtor(dadosBody, contentType)
 
     response.status(resultDados.status_code)
     response.json(resultDados)
@@ -225,7 +226,7 @@ app.delete('/v2/acmefilmes/ator/:id', cors(), async function(request, response, 
 
     let idAtor = request.params.id
     
-    let dadosAtor = await controllerFilmes.setExcluirFilme(idAtor)
+    let dadosAtor = await controllerAtores.setExcluirAtor(idAtor)
 
     response.status(dadosAtor.status_code)
     response.json(dadosAtor)
@@ -233,7 +234,7 @@ app.delete('/v2/acmefilmes/ator/:id', cors(), async function(request, response, 
 })
 
 //ENDPOINT: Update ator do Banco de Dados
-app.put('/v2/acmefilmes/ator/:id', cors(), async function(request, response, next){
+app.put('/v2/acmefilmes/ator/:id', cors(), bodyParserJSON, async function(request, response, next){
 
     let idAtor = request.params.id
     let contentType = request.headers['content-type']
@@ -284,16 +285,62 @@ app.get('/v1/acmefilmes/diretores/filtro', cors(), async function(request, respo
     response.json(dadosDiretor)
 })
 
+//ENDPOINT: Inserir novos diretores no Banco de Dados
+    //Não esquecer de colocar o bodyParserJSON que é quem define o formato de chegada dos dados
+    //Obs: esse objeto foi criado no iício do projeto
+
+    app.post('/v2/acmefilmes/diretor', cors(), bodyParserJSON, async function(request, response, next){
+
+        //Recebe o content-type da requisição (a API deve receber somente application/JSON)
+        let contentType = request.headers['content-type']
+    
+        console.log(contentType)
+    
+        //Recebe os dados encaminhados na requisição no body (JSON)
+        let dadosBody = request.body
+    
+        //Encaminha os dados da requisição para a controller enviar para o BD
+        let resultDados = await controllerDiretores.setInserirNovoDiretor(dadosBody, contentType)
+    
+        response.status(resultDados.status_code)
+        response.json(resultDados)
+    })
+    
+    //ENDPOINT: Deletar um diretor do Banco de Dados
+    app.delete('/v2/acmefilmes/diretor/:id', cors(), async function(request, response, next){
+    
+        let idDiretor = request.params.id
+        
+        let dadosDiretor = await controllerDiretores.setExcluirDiretor(idDiretor)
+    
+        response.status(dadosDiretor.status_code)
+        response.json(dadosDiretor)
+    
+    })
+    
+    //ENDPOINT: Update diretor do Banco de Dados
+    app.put('/v2/acmefilmes/diretor/atualizado/:id', cors(), bodyParserJSON,  async function(request, response, next){
+    
+        let idDiretor = request.params.id
+        let contentType = request.headers['content-type']
+        let dadosBody = request.body
+        
+        let dadosAtualizados = await controllerDiretores.setAtualizarDiretor(dadosBody, contentType, idDiretor)
+        
+        response.status(dadosAtualizados.status_code);
+        response.json(dadosAtualizados)
+    })
+
 /**********************************************************************/
 
-// ENDPOINT GÊNERO
+// ENDPOINT gênero
 
 // Listar todos os gêneros inseridos no banco de dados.
 app.get('/v2/acmefilmes/generos', cors(), async function(request, response, next){
-    let dadosGeneros = await controllerGeneros.getListarGeneros()
+    let dadosGenero = await controllerGenero.getListarGeneros()
 
-    if(dadosGeneros){
-        response.json(dadosGeneros)
+    if(dadosGenero){
+        response.json(dadosGenero)
         response.status(200)
     }else{
         response.json({message: 'Nenhum registro encontrado'})
@@ -301,30 +348,160 @@ app.get('/v2/acmefilmes/generos', cors(), async function(request, response, next
     }
 })
 
-// Busca o ator pelo ID.
+// Busca o gênero pelo ID.
 app.get('/v2/acmefilmes/genero/:id', cors(), async function(request, response, next){
     let idGenero = request.params.id
 
-    let dadosGeneros = await controllerGeneros.getBuscarGenero(idGenero)
+    let dadosGenero = await controllerGenero.getBuscarGenero(idGenero)
 
-    response.status(dadosGeneros.status_code)
-    response.json(dadosGeneros)
+    response.status(dadosGenero.status_code)
+    response.json(dadosGenero)
 })
 
-// Busca o ator pelo nome.
+// Busca o gênero pelo nome.
 app.get('/v1/acmefilmes/generos/filtro', cors(), async function(request, response, next){
     let nomeGenero = request.query.nome
 
     console.log(nomeGenero)
 
-    let dadosGeneros = await controllerGeneros.getBuscarGeneroNome(nomeGenero)
+    let dadosGenero = await controllerGenero.getBuscarGeneroNome(nomeGenero)
 
-    response.status(dadosGeneros.status_code)
-    response.json(dadosGeneros)
+    response.status(dadosGenero.status_code)
+    response.json(dadosGenero)
+})
+
+//ENDPOINT: Inserir novos gêneros no Banco de Dados
+    //Não esquecer de colocar o bodyParserJSON que é quem define o formato de chegada dos dados
+    //Obs: esse objeto foi criado no iício do projeto
+
+    app.post('/v2/acmefilmes/genero', cors(), bodyParserJSON, async function(request, response, next){
+
+        //Recebe o content-type da requisição (a API deve receber somente application/JSON)
+        let contentType = request.headers['content-type']
+    
+        console.log(contentType)
+    
+        //Recebe os dados encaminhados na requisição no body (JSON)
+        let dadosBody = request.body
+    
+        //Encaminha os dados da requisição para a controller enviar para o BD
+        let resultDados = await controllerGenero.setInserirNovoGenero(dadosBody, contentType)
+    
+        response.status(resultDados.status_code)
+        response.json(resultDados)
+    })
+
+//ENDPOINT: Deletar um gênero do Banco de Dados
+app.delete('/v3/acmefilmes/genero/:id', cors(), async function(request, response, next){
+
+    let idGenero = request.params.id
+    
+    let dadosGenero = await controllerGenero.setExcluirGenero(idGenero)
+
+    response.status(dadosGenero.status_code)
+    response.json(dadosGenero)
+
+})
+
+//ENDPOINT: Update gênero do Banco de Dados
+app.put('/v2/acmefilmes/genero/atualizado/:id', cors(), bodyParserJSON, async function(request, response, next){
+
+    let idGenero = request.params.id
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    
+    let dadosAtualizados = await controllerGenero.setAtualizarGenero(idGenero, contentType, dadosBody)
+    
+    response.status(dadosAtualizados.status_code);
+    response.json(dadosAtualizados)
+})
+
+/**********************************************************************/
+
+// ENDPOINT Classificação
+
+// Listar todos os classificação inseridos no banco de dados.
+app.get('/v2/acmefilmes/classificacao', cors(), async function(request, response, next){
+    let dadosClassificacao = await controllerClassificacao.getListarClassificacao()
+
+    if(dadosClassificacao){
+        response.json(dadosClassificacao)
+        response.status(200)
+    }else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status(404)
+    }
+})
+
+// Busca o classificação pelo nome.
+app.get('/v2/acmefilmes/classificacao/filtro', cors(), async function(request, response, next){
+    let nomeClassificacao = request.query.nome
+
+    console.log(nomeClassificacao)
+
+    let dadosClassificacao = await controllerClassificacao.getBuscarClassificacaoNome(nomeClassificacao)
+
+    response.status(dadosClassificacao.status_code)
+    response.json(dadosClassificacao)
+})
+
+// Busca o classificação pelo ID.
+app.get('/v2/acmefilmes/classificacao/:id', cors(), async function(request, response, next){
+    let idClassificacao = request.params.id
+
+    let dadosClassificacao = await controllerClassificacao.getBuscarClassificacao(idClassificacao)
+
+    response.status(dadosClassificacao.status_code)
+    response.json(dadosClassificacao)
 })
 
 
 
+//ENDPOINT: Inserir novos classificação no Banco de Dados
+    //Não esquecer de colocar o bodyParserJSON que é quem define o formato de chegada dos dados
+    //Obs: esse objeto foi criado no iício do projeto
+
+    app.post('/v2/acmefilmes/classificacao', cors(), bodyParserJSON, async function(request, response, next){
+
+        //Recebe o content-type da requisição (a API deve receber somente application/JSON)
+        let contentType = request.headers['content-type']
+    
+        console.log(contentType)
+    
+        //Recebe os dados encaminhados na requisição no body (JSON)
+        let dadosBody = request.body
+    
+        //Encaminha os dados da requisição para a controller enviar para o BD
+        let resultDados = await controllerClassificacao.setInserirNovaClassificacao(dadosBody, contentType)
+    
+        response.status(resultDados.status_code)
+        response.json(resultDados)
+    })
+
+//ENDPOINT: Deletar um classificação do Banco de Dados
+app.delete('/v2/acmefilmes/classificacao/:id', cors(), async function(request, response, next){
+
+    let idClassificacao = request.params.id
+    
+    let dadosClassificacao = await controllerClassificacao.setExcluirClassificacao(idClassificacao)
+
+    response.status(dadosClassificacao.status_code)
+    response.json(dadosClassificacao)
+
+})
+
+//ENDPOINT: Update classificação do Banco de Dados
+app.put('/v2/acmefilmes/classificacao/atualizado/:id', cors(), bodyParserJSON, async function(request, response, next){
+
+    let idClassificacao = request.params.id
+    let contentType = request.headers['content-type']
+    let dadosBody = request.body
+    
+    let dadosAtualizados = await controllerClassificacao.setAtualizarClassificacao( idClassificacao, contentType,dadosBody)
+    
+    response.status(dadosAtualizados.status_code);
+    response.json(dadosAtualizados)
+})
 
 
 //Executa a API e faz ela ficar aguardando requisições

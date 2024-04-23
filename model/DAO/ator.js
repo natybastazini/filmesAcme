@@ -8,6 +8,8 @@
 const { PrismaClient } = require ('@prisma/client')
 const prisma = new PrismaClient()
 
+//Inserir um novo ator
+
 const insertAtor = async function(dadosAtor){
     try {
         let sql
@@ -18,7 +20,7 @@ const insertAtor = async function(dadosAtor){
         ){
                 sql = `insert into tbl_ator (
                             nome,
-							data_nascimento,
+                            data_nascimento,
                             data_falecimento, 
                             foto,
                             biografia,
@@ -64,6 +66,56 @@ const insertAtor = async function(dadosAtor){
         return false
     }
 }
+
+//Atualizar um ator existente filtrando pelo ID.
+
+const updateAtor = async function(id){
+    try {
+
+        let sql
+
+        if( dadosAtor.data_falecimento == null ||
+            dadosAtor.data_falecimento == '' ||
+            dadosAtor.data_falecimento == undefined
+        ){    
+            sql = `update tbl_ator set
+                                        nome = '${dadosAtor.nome}',
+                                        data_nascimento = '${dadosAtor.data_nascimento}',
+                                        data_falecimento = null,
+                                        foto = '${dadosAtor.foto}',
+                                        biografia = ${dadosAtor.biografia},
+                                        sexo_id = ${dadosAtor.sexo_id}
+                                        where id = ${idAtor}`
+            
+        } else {
+
+            sql = `update tbl_ator set 
+                                        nome = '${dadosAtor.nome}',
+                                        data_nascimento = '${dadosAtor.data_nascimento}',
+                                        data_falecimento = '${dadosAtor.data_falecimento}',
+                                        foto = '${dadosAtor.foto}',
+                                        biografia = ${dadosAtor.biografia},
+                                        sexo_id = ${dadosAtor.sexo_id}
+                                        where id = ${idAtor}`
+
+        }
+
+        // Executa o script SQL no Banco de Dados (devemos usar o comando execute e não o query)
+        // O comando execute deve ser utilizado para INSERT, UPDATE, DELETE
+        let resultado = await prisma.$executeRawUnsafe(sql)
+        
+        // Validação para verificar se o insert funcionou no DB
+        if(resultado)
+            return true
+        else
+            return false
+    } catch (error) {
+        return false
+    }
+
+}
+
+//Excluir um ator existente filtrando pelo ID.
 
 const deleteAtor = async function(id){
     try {
@@ -138,5 +190,6 @@ module.exports = {
     selectByNomeAtor,
     selectUltimoId,
     insertAtor,
+    updateAtor,
     deleteAtor
 }
