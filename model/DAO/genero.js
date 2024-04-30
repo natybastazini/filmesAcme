@@ -145,6 +145,21 @@ const selectUltimoId = async function(){
 
 }
 
+const selectByIdGeneroFilme = async function(id){
+
+    try {
+        let sql = `select tg.id, tg.nome from tbl_genero as tg
+        inner join tbl_filme_genero as tfg
+        on tg.id = tfg.genero_id where tfg.filme_id = ${id};`
+
+        let rsGenero = await prisma.$queryRawUnsafe(sql)
+        return rsGenero
+         
+    } catch (error) {
+        return false
+    }
+}
+
 module.exports={
     selectAllGeneros,
     selectByIdGenero,
@@ -152,5 +167,6 @@ module.exports={
     insertGenero,
     updateGenero,
     deleteGenero,
-    selectUltimoId
+    selectUltimoId,
+    selectByIdGeneroFilme
 }

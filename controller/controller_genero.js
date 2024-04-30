@@ -24,6 +24,7 @@ const getListarGeneros = async function(){
 
     //Verifica se existem dados retornados do DAO.
     if(dadosGeneros){
+        
         //Montando o JSON para retornar para o APP.
         generosJSON.generos = dadosGeneros
         generosJSON.quantidade = dadosGeneros.length

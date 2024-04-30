@@ -11,6 +11,7 @@ const message = require('../modulo/config.js')
 
 //Import do arquivo DAO para manipular dados do BD.
 const filmesDAO = require('../model/DAO/filme.js')
+const generoDAO = require('../model/DAO/genero.js')
 
 
 //Função para inserir um novo filme no banco de dados.
@@ -94,8 +95,6 @@ const setAtualizarFilme = async (id,  contentType, dadosFilme) =>{
 
             if(String(contentType).toLowerCase() == 'application/json'){
                 let resultDadosFilme = {}
-                
-                console.log(dadosFilme)
                
                 // Validação para verificar campos obrigatórios e consistencia de dados
                 if( dadosFilme.nome             == '' || dadosFilme.nome            == undefined || dadosFilme.nome.length              > 80    ||
@@ -105,12 +104,9 @@ const setAtualizarFilme = async (id,  contentType, dadosFilme) =>{
                     dadosFilme.foto_capa        == '' || dadosFilme.foto_capa       == undefined || dadosFilme.foto_capa.length         > 200   ||
                     dadosFilme.valor_unitario.length > 8 
                 ){
-                    console.log("ee")
                     return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorreto
                 }else{
                     let dadosValidated = false
-
-                    console.log("ii")
 
                     //Validação de digitação para a data de relançamento que não é campo obrigatório
                     if(     dadosFilme.data_relancamento != null && 
@@ -209,6 +205,16 @@ const getListarFilmes = async function(){
 
     //Verifica se existem dados retornados do DAO.
     if(dadosFilmes){
+        
+        const promisse = dadosFilmes.map(async(filme)=>{
+            let generoJSON = await generoDAO.selectByIdGeneroFilme(filme.id)
+            if(generoJSON.length > 0){
+                filme.genero = generoJSON
+            }
+        })
+
+        await Promise.all(promisse)
+
         //Montando o JSON para retornar para o APP.
         filmesJSON.filmes = dadosFilmes
         filmesJSON.quantidade = dadosFilmes.length
