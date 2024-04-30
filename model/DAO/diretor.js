@@ -68,7 +68,7 @@ const insertDiretor = async function(dadosDiretor){
 
 //Atualizar um diretor existente filtrando pelo ID.
 
-const updateDiretor= async function(id){
+const updateDiretor= async function(id, dadosDiretor){
     try {
 
         let sql
@@ -82,9 +82,9 @@ const updateDiretor= async function(id){
                                         data_nascimento = '${dadosDiretor.data_nascimento}',
                                         data_falecimento = null,
                                         foto = '${dadosDiretor.foto}',
-                                        biografia = ${dadosDiretor.biografia},
+                                        biografia = '${dadosDiretor.biografia}',
                                         sexo_id = ${dadosDiretor.sexo_id}
-                                        where id = ${idAtor}`
+                                        where id = ${id}`
             
         } else {
 
@@ -93,9 +93,9 @@ const updateDiretor= async function(id){
                                         data_nascimento = '${dadosDiretor.data_nascimento}',
                                         data_falecimento = '${dadosDiretor.data_falecimento}',
                                         foto = '${dadosDiretor.foto}',
-                                        biografia = ${dadosDiretor.biografia},
+                                        biografia = '${dadosDiretor.biografia}',
                                         sexo_id = ${dadosDiretor.sexo_id}
-                                        where id = ${idAtor}`
+                                        where id = ${id}`
 
         }
 

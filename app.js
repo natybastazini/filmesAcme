@@ -204,7 +204,7 @@ app.get('/v1/acmefilmes/atores/filtro', cors(), async function(request, response
 })
 
 // Inserir um novo ator no banco de dados.
-app.post('/v2/acmefilmes/ator', cors(), bodyParserJSON, async function(request, response, next){
+app.post('/v2/acmefilmes/ator/novo', cors(), bodyParserJSON, async function(request, response, next){
 
     //Recebe o content-type da requisição (a API deve receber somente application/JSON)
     let contentType = request.headers['content-type']
@@ -234,13 +234,13 @@ app.delete('/v2/acmefilmes/ator/:id', cors(), async function(request, response, 
 })
 
 //ENDPOINT: Update ator do Banco de Dados
-app.put('/v2/acmefilmes/ator/:id', cors(), bodyParserJSON, async function(request, response, next){
+app.put('/v2/acmefilmes/ator/atualiazado/:id', cors(), bodyParserJSON, async function(request, response, next){
 
     let idAtor = request.params.id
     let contentType = request.headers['content-type']
     let dadosBody = request.body
     
-    let dadosAtualizados = await controllerAtores.setAtualizarAtor(dadosBody, contentType, idAtor)
+    let dadosAtualizados = await controllerAtores.setAtualizarAtor(idAtor, contentType, dadosBody)
     
     response.status(dadosAtualizados.status_code);
     response.json(dadosAtualizados)
@@ -267,7 +267,7 @@ app.get('/v2/acmefilmes/diretores', cors(), async function(request, response, ne
 app.get('/v2/acmefilmes/diretor/:id', cors(), async function(request, response, next){
     let idDiretor = request.params.id
 
-    let dadosDiretor = await controllerDiretores.getDiretorID(idDiretor)
+    let dadosDiretor = await controllerDiretores.getDiretor(idDiretor)
 
     response.status(dadosDiretor.status_code)
     response.json(dadosDiretor)
@@ -289,7 +289,7 @@ app.get('/v1/acmefilmes/diretores/filtro', cors(), async function(request, respo
     //Não esquecer de colocar o bodyParserJSON que é quem define o formato de chegada dos dados
     //Obs: esse objeto foi criado no iício do projeto
 
-    app.post('/v2/acmefilmes/diretor', cors(), bodyParserJSON, async function(request, response, next){
+    app.post('/v2/acmefilmes/diretor/novo', cors(), bodyParserJSON, async function(request, response, next){
 
         //Recebe o content-type da requisição (a API deve receber somente application/JSON)
         let contentType = request.headers['content-type']
@@ -325,7 +325,7 @@ app.get('/v1/acmefilmes/diretores/filtro', cors(), async function(request, respo
         let contentType = request.headers['content-type']
         let dadosBody = request.body
         
-        let dadosAtualizados = await controllerDiretores.setAtualizarDiretor(dadosBody, contentType, idDiretor)
+        let dadosAtualizados = await controllerDiretores.setAtualizarDiretor(idDiretor, contentType, dadosBody)
         
         response.status(dadosAtualizados.status_code);
         response.json(dadosAtualizados)

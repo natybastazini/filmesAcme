@@ -69,7 +69,7 @@ const insertAtor = async function(dadosAtor){
 
 //Atualizar um ator existente filtrando pelo ID.
 
-const updateAtor = async function(id){
+const updateAtor = async function(id, dadosAtor){
     try {
 
         let sql
@@ -83,9 +83,9 @@ const updateAtor = async function(id){
                                         data_nascimento = '${dadosAtor.data_nascimento}',
                                         data_falecimento = null,
                                         foto = '${dadosAtor.foto}',
-                                        biografia = ${dadosAtor.biografia},
+                                        biografia = '${dadosAtor.biografia}',
                                         sexo_id = ${dadosAtor.sexo_id}
-                                        where id = ${idAtor}`
+                                        where id = ${id}`
             
         } else {
 
@@ -94,9 +94,9 @@ const updateAtor = async function(id){
                                         data_nascimento = '${dadosAtor.data_nascimento}',
                                         data_falecimento = '${dadosAtor.data_falecimento}',
                                         foto = '${dadosAtor.foto}',
-                                        biografia = ${dadosAtor.biografia},
+                                        biografia = '${dadosAtor.biografia}',
                                         sexo_id = ${dadosAtor.sexo_id}
-                                        where id = ${idAtor}`
+                                        where id = ${id}`
 
         }
 
@@ -110,6 +110,7 @@ const updateAtor = async function(id){
         else
             return false
     } catch (error) {
+        console.log(error)
         return false
     }
 

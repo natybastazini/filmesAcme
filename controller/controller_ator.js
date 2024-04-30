@@ -16,11 +16,11 @@ const nacionalidadeDAO = require('../model/DAO/nacionalidade.js')
 const getListarAtores = async function(){
 
     let atoresJSON = {}
-    let dadosAtores = await atorDAO.selectAllAtores()
+    let dadosAtor = await atorDAO.selectAllAtores()
 
-    if(dadosAtores){
+    if(dadosAtor){
 
-        const promisse = dadosAtores.map(async(ator)=>{
+        const promisse = dadosAtor.map(async(ator)=>{
             let sexoJSON = await sexoDAO.selectByIdSexo(ator.sexo_id)
             ator.sexo = sexoJSON
             let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(ator.id)
@@ -32,9 +32,9 @@ const getListarAtores = async function(){
 
         await Promise.all(promisse)
 
-        atoresJSON.ator = dadosAtores
+        atoresJSON.ator = dadosAtor
 
-        atoresJSON.quantidade = dadosAtores.length
+        atoresJSON.quantidade = dadosAtor.length
         atoresJSON.status_code = 200
 
         return atoresJSON
@@ -138,16 +138,15 @@ const setInserirNovoAtor = async function (dadosAtor, contentType){
     try {
             if(String(contentType).toLowerCase() == 'application/json'){
                 let dadosAtualizados = {}
+                console.log(dadosAtor)
             
             // Validação para verificar campos obrigatórios e consistencia de dados
-            if( dadosAtor.nome             == '' || dadosAtor.nome              == undefined || dadosAtor.nome.length               > 80        ||
+            if( dadosAtor.nome             == '' || dadosAtor.nome              == undefined || dadosAtor.nome.length               > 100       ||
                 dadosAtor.data_nascimento  == '' || dadosAtor.data_nascimento   == undefined || dadosAtor.data_nascimento.length    > 10        ||
-                dadosAtor.data_falecimento == '' || dadosAtor.data_falecimento  == undefined || dadosAtor.data_falecimento.length   > 10        ||
-                dadosAtor.foto             == '' || dadosAtor.foto              == undefined || dadosAtor.foto.length               > 200       ||
+                dadosAtor.foto             == '' || dadosAtor.foto              == undefined || dadosAtor.foto.length               > 600       ||
                 dadosAtor.biografia        == '' || dadosAtor.biografia         == undefined || dadosAtor.biografia.length          > 65000     ||
-                dadosAtor.sexo_id          == '' || dadosAtor.sexo_id           == undefined || dadosAtor.sexo_id.length            > 80      
-            ){
-                console.log(dadosAtor)  
+                dadosAtor.sexo_id          == '' || dadosAtor.sexo_id           == undefined || dadosAtor.sexo_id.length            > 1      
+            ){  
                 return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorreto
             }else{
                 let dadosValidated = false
@@ -203,7 +202,7 @@ const setInserirNovoAtor = async function (dadosAtor, contentType){
 
 //Função para atualizar um ator existente.
 
-const setAtualizarAtor = async (id, dadosAtor, contentType) =>{
+const setAtualizarAtor = async (id, contentType, dadosAtor) =>{
     try {
 
         let idAtor = id; 
@@ -216,13 +215,13 @@ const setAtualizarAtor = async (id, dadosAtor, contentType) =>{
                 let resultDadosAtor = {}
                 
                 // Validação para verificar campos obrigatórios e consistencia de dados
-                if( dadosAtor.nome             == '' || dadosAtor.nome              == undefined || dadosAtor.nome.length               > 80        ||
+                if( dadosAtor.nome             == '' || dadosAtor.nome              == undefined || dadosAtor.nome.length               > 100       ||
                     dadosAtor.data_nascimento  == '' || dadosAtor.data_nascimento   == undefined || dadosAtor.data_nascimento.length    > 10        ||
-                    dadosAtor.data_falecimento == '' || dadosAtor.data_falecimento  == undefined || dadosAtor.data_falecimento.length   > 10        ||
-                    dadosAtor.foto             == '' || dadosAtor.foto              == undefined || dadosAtor.foto .length              > 200       ||
+                    dadosAtor.foto             == '' || dadosAtor.foto              == undefined || dadosAtor.foto .length              > 600       ||
                     dadosAtor.biografia        == '' || dadosAtor.biografia         == undefined || dadosAtor.biografia .length         > 65000     ||
-                    dadosAtor.sexo_id          == '' || dadosAtor.sexo_id           == undefined || dadosAtor.sexo_id.length            > 80  
+                    dadosAtor.sexo_id          == '' || dadosAtor.sexo_id           == undefined || dadosAtor.sexo_id.length            > 1  
                 ){
+
                     return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorreto
                 }else{
                     let dadosValidated = false
@@ -244,7 +243,7 @@ const setAtualizarAtor = async (id, dadosAtor, contentType) =>{
                     if(dadosValidated){
                         
                             //Encaminha os dados para o DAO inserir no BD
-                            let novoAtor = await atorDAO.updateAtor(dadosAtor)
+                            let novoAtor = await atorDAO.updateAtor(id, dadosAtor)
 
                         //Validação para verificar se os dados foram inseridos pelo DAO no BD
                         if(novoAtor){
@@ -270,6 +269,7 @@ const setAtualizarAtor = async (id, dadosAtor, contentType) =>{
             }
         }     
     } catch (error) {
+
         return message.ERROR_INTERNAL_SERVER // 500 Erro na camada de negócio da aplicação
     }
 }
