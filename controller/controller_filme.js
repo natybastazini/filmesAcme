@@ -246,6 +246,12 @@ const getBuscarFilme = async function(id){
 
         //Validação para verificar se existem dados encontrados
         if(dadosFilme){
+
+            let generoJSON = await generoDAO.selectByIdGeneroFilme(idFilme)
+            if(generoJSON.length > 0){
+                dadosFilme[0].genero = generoJSON
+            }
+
             //Validação para verificar se existem dados de retorno
             if(dadosFilme.length > 0){
 

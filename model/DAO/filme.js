@@ -155,7 +155,7 @@ const deleteFilme = async function(id){
 const selectAllFilmes = async function(){
 
     //Script SQL para listar todos os registros
-    let sql = 'select * from tbl_filme order by id desc'
+    let sql = 'select f.id, f.nome, f.sinopse, time_format(f.duracao, "%H:%i") as duracao, date_format(f.data_lancamento, "%Y-%m-%d") as data_lancamento, date_format(f.data_relancamento, "%Y-%m-%d") as data_relancamento, f.foto_capa, f.valor_unitario, f.classificacao_id from tbl_filme as f order by id desc'
 
     //$queryRawUnsafe() ---- encaminha apenas variável.
     //$queryRaw('select * from tbl_filme') ---- encaminha o script.
@@ -176,7 +176,7 @@ const selectByIdFilme = async function(id){
 
     try {
         //Realiza a busca do filme pelo ID
-        let sql = `select * from tbl_filme where id = ${id}`
+        let sql = `select f.id, f.nome, f.sinopse, time_format(f.duracao, "%H:%i") as duracao, date_format(f.data_lancamento, "%Y-%m-%d") as data_lancamento, date_format(f.data_relancamento, "%Y-%m-%d") as data_relancamento, f.foto_capa, f.valor_unitario, f.classificacao_id from tbl_filme as f where id = ${id}`
 
         //Executa no Banco de Dados o script SQL
         let rsFilme = await prisma.$queryRawUnsafe(sql)
@@ -192,7 +192,7 @@ const selectByNomeFilme = async function(nome){
 
     let nomeFilme = nome
 
-    let sql = `select * from tbl_filme where nome like '%${nomeFilme}%'`
+    let sql = `select f.id, f.nome, f.sinopse, time_format(f.duracao, "%H:%i") as duracao, date_format(f.data_lancamento, "%Y-%m-%d") as data_lancamento, date_format(f.data_relancamento, "%Y-%m-%d") as data_relancamento, f.foto_capa, f.valor_unitario, f.classificacao_id from tbl_filme as f where nome like '%${nomeFilme}%'`
 
     let rsFilmes = await prisma.$queryRawUnsafe(sql)
 
