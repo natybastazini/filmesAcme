@@ -39,7 +39,6 @@ const insertFilme = async function(dadosFilme){
                     '${dadosFilme.foto_capa}',
                     '${dadosFilme.valor_unitario}',
                     '${dadosFilme.classificacao_id}'
-                
                 )`;
         }else{
                 //Script SQL para inserir os dados no banco
@@ -98,7 +97,8 @@ const updateFilme = async function(id, dadosFilme){
                                         data_lancamento = '${dadosFilme.data_lancamento}',
                                         data_relancamento = null,
                                         foto_capa = '${dadosFilme.foto_capa}',
-                                        valor_unitario = ${dadosFilme.valor_unitario}
+                                        valor_unitario = ${dadosFilme.valor_unitario},
+                                        classificacao_id = ${dadosFilme.classificacao_id}
                                         where id = ${id}`
             
         } else {
@@ -110,7 +110,8 @@ const updateFilme = async function(id, dadosFilme){
                                         data_lancamento = '${dadosFilme.data_lancamento}',
                                         data_relancamento = '${dadosFilme.data_relancamento}',
                                         foto_capa = '${dadosFilme.foto_capa}',
-                                        valor_unitario = ${dadosFilme.valor_unitario}
+                                        valor_unitario = ${dadosFilme.valor_unitario},
+                                        classificacao_id = ${dadosFilme.classificacao_id}
                                         where id = ${id}`
 
         }
