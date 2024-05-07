@@ -23,7 +23,7 @@ const getListarDiretores = async function(){
         const promisse = dadosDiretores.map(async(diretor)=>{
             let sexoJSON = await sexoDAO.selectByIdSexo(diretor.sexo_id)
             diretor.sexo = sexoJSON
-            let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(diretor.id)
+            let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidadeDiretor(diretor.id)
            
             if(nacionalidadeJSON.length > 0){ 
                 diretor.nacionalidade = nacionalidadeJSON
@@ -103,7 +103,7 @@ const  getDiretorNome = async function(nome){
         const promisse = dadosDiretor.map(async(diretor)=>{
             let sexoJSON = await sexoDAO.selectByIdSexo(diretor.sexo_id)
             diretor.sexo = sexoJSON
-            let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(diretor.id)
+            let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidadeDiretor(diretor.id)
            
             if(nacionalidadeJSON.length > 0){ 
                 diretor.nacionalidade = nacionalidadeJSON

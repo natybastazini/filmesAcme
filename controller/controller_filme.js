@@ -12,6 +12,9 @@ const message = require('../modulo/config.js')
 //Import do arquivo DAO para manipular dados do BD.
 const filmesDAO = require('../model/DAO/filme.js')
 const generoDAO = require('../model/DAO/genero.js')
+const classificacaoDAO = require('../model/DAO/classificacao.js')
+const atorDAO = require('../model/DAO/ator.js')
+const diretorDAO = require('../model/DAO/diretor.js')
 
 
 //Função para inserir um novo filme no banco de dados.
@@ -208,10 +211,18 @@ const getListarFilmes = async function(){
         
         const promisse = dadosFilmes.map(async(filme)=>{
             let generoJSON = await generoDAO.selectByIdGeneroFilme(filme.id)
+            let classificacaoJSON = await classificacaoDAO.selectByIdClassificacao(filme.id)
+            filme.classificacao = classificacaoJSON
+            let atorJSON = await atorDAO.selectByIdAtor(filme.id)
+            filme.ator = atorJSON
+            let diretorJSON = await diretorDAO.selectByIdDiretor(filme.id)
+            filme.diretor = diretorJSON
             if(generoJSON.length > 0){
                 filme.genero = generoJSON
             }
         })
+
+        
 
         await Promise.all(promisse)
 
@@ -248,9 +259,24 @@ const getBuscarFilme = async function(id){
         if(dadosFilme){
 
             let generoJSON = await generoDAO.selectByIdGeneroFilme(idFilme)
+            let classificacaoJSON = await classificacaoDAO.selectByIdClassificacao(idFilme)
+            let atorJSON = await atorDAO.selectByIdAtor(idFilme)
+            let diretorJSON = await diretorDAO.selectByIdDiretor(idFilme)
+           
             if(generoJSON.length > 0){
                 dadosFilme[0].genero = generoJSON
             }
+            if(classificacaoJSON.length > 0){
+                dadosFilme[0].classificacao = classificacaoJSON
+            }
+            if(atorJSON.length > 0){
+                dadosFilme[0].ator = atorJSON
+            }
+            if(diretorJSON.length > 0){
+                dadosFilme[0].diretor = diretorJSON
+            }
+
+
 
             //Validação para verificar se existem dados de retorno
             if(dadosFilme.length > 0){

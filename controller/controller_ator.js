@@ -23,7 +23,7 @@ const getListarAtores = async function(){
         const promisse = dadosAtor.map(async(ator)=>{
             let sexoJSON = await sexoDAO.selectByIdSexo(ator.sexo_id)
             ator.sexo = sexoJSON
-            let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(ator.id)
+            let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidadeAtor(ator.id)
            
             if(nacionalidadeJSON.length > 0){ 
                 ator.nacionalidade = nacionalidadeJSON
@@ -69,7 +69,7 @@ const getAtor = async function(id){
                     let sexoJSON = await sexoDAO.selectByIdSexo(dadosAtor[0].sexo_id)
                     dadosAtor[0].sexo = sexoJSON
                     console.log(dadosAtor)
-                    let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidade(dadosAtor[0].id)
+                    let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidadeAtor(dadosAtor[0].id)
                 
                     if(nacionalidadeJSON.length > 0){ 
                         dadosAtor[0].nacionalidade = nacionalidadeJSON
