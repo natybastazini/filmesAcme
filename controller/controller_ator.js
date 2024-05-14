@@ -69,7 +69,7 @@ const getAtor = async function(id){
                     let sexoJSON = await sexoDAO.selectByIdSexo(dadosAtor[0].sexo_id)
                     dadosAtor[0].sexo = sexoJSON
                     console.log(dadosAtor)
-                    let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidadeAtor(dadosAtor[0].id)
+                    let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidadeAtor(dadosAtor[0].nome)
                 
                     if(nacionalidadeJSON.length > 0){ 
                         dadosAtor[0].nacionalidade = nacionalidadeJSON
