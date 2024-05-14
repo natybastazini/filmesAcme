@@ -40,13 +40,14 @@ const insertGenero = async function(dadosGenero){
 
 //Atualizar um gênero existente filtrando pelo ID.
 
-const updateGenero = async function(id){
+const updateGenero = async function(id, dadosGenero){
     try {
 
-        let sql
+        let sql;
+        console.log(sql)
 
         sql = `update tbl_genero set
-                                        nome = '${dadosGenero.nome}'
+                                    nome = '${dadosGenero.nome}'
                                         where id = ${id}`
             
 

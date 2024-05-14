@@ -60,7 +60,11 @@ const setInserirNovoFilme = async function (dadosFilme, contentType){
                     //Validação para verificar se os dados foram inseridos pelo DAO no BD
                     if(novoFilme){
                        
-                    let idFilme = await filmesDAO.selectUltimoId()                     
+                    let idFilme = await filmesDAO.selectUltimoId()
+                    
+                    //inserir na tabela de relação de ator
+                    //inserir na tabela de relação de diretor
+                    //inserir na tabela de relação de genero 
 
                         dadosFilme.id = Number(idFilme[0].id)
                         //Cria o padrão JSON para retorno dos dados criados no BD

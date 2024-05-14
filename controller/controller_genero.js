@@ -171,26 +171,32 @@ const setAtualizarGenero = async (id,  contentType, dadosGenero) =>{
                 ){
                     return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorreto
                 }else{
-                  
-                            //Encaminha os dados para o DAO inserir no BD
+
+                        //Encaminha os dados para o DAO inserir no BD
                         let novoGenero = await generoDAO.selectByIdGenero(id)
+
+                        console.log(novoGenero)
 
                         //Validação para verificar se os dados foram inseridos pelo DAO no BD
                         if(novoGenero){
 
                             let idGenero = await generoDAO.updateGenero(id, dadosGenero)
+
+                            // dadosGenero.id = Number(idGenero[0].id)
                     
+                                    //Cria o padrão JSON para retorno dos dados criados no BD
+                                    resultDadosGenero.status         = message.SUCESS_UPDATED_ITEM.status;
+                                    resultDadosGenero.status_code    = message.SUCESS_UPDATED_ITEM.status_code;
+                                    resultDadosGenero.message        = message.SUCESS_UPDATED_ITEM.message
+                                    resultDadosGenero.Genero         = dadosGenero
                         
-                            //Cria o padrão JSON para retorno dos dados criados no BD
-                            resultDadosGenero.status         = message.SUCESS_UPDATED_ITEM.status;
-                            resultDadosGenero.status_code    = message.SUCESS_UPDATED_ITEM.status_code;
-                            resultDadosGenero.message        = message.SUCESS_UPDATED_ITEM.message
-                            resultDadosGenero.Genero         = dadosGenero
-                
-                            return resultDadosGenero // 201
+                                    return resultDadosGenero // 201
+                            
+                     
                         }else{
                             return message.ERROR_INTERNAL_SERVER_DB // 500 Erro na camada do DAO
-                        }
+                        } 
+                            
                     
                 }
             }else{
@@ -198,6 +204,7 @@ const setAtualizarGenero = async (id,  contentType, dadosGenero) =>{
             }
         }     
     } catch (error) {
+        console.log(error)
         return message.ERROR_INTERNAL_SERVER // 500 Erro na camada de negócio da aplicação
     }
 }
