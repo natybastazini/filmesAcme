@@ -69,7 +69,7 @@ const getDiretor = async function(id){
                     let sexoJSON = await sexoDAO.selectByIdSexo(dadosDiretor[0].sexo_id)
                     dadosDiretor[0].sexo = sexoJSON
                     console.log(dadosDiretor)
-                    let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidadeDiretor(dadosDiretor[0].id)
+                    let nacionalidadeJSON = await nacionalidadeDAO.selectByIdNacionalidadeDiretor(dadosDiretor[0].nome)
                 
                     if(nacionalidadeJSON.length > 0){ 
                         dadosDiretor[0].nacionalidade = nacionalidadeJSON
